@@ -41,7 +41,7 @@ function buyPrompt(){
 			,type: "input"
 			,message: "What product ID would you like to buy?"
 			,validate: function(str){
-				return parseInt(str) >= 0 && parseInt(str) < 14;
+				return parseInt(str) >= 0;
 			}
 		}
 		,{
@@ -54,14 +54,15 @@ function buyPrompt(){
 		}
 		]).then(function(answers){
 			connection.query("SELECT stock_quantity, price, product_name FROM products WHERE item_id = ?",[answers.product],function(err,response){
+				var totalPrice = (parseFloat(answers.quantity) * parseFloat(response[0].price)).toFixed(2);
 				if (response[0].stock_quantity < answers.quantity) {
 					console.log("Insufficient quantity!");
 					buyPrompt();
 				}
 				else{
-					connection.query("UPDATE products SET stock_quantity = stock_quantity - ? WHERE item_id = ?",[answers.quantity,answers.product],function(err,update){
+					connection.query("UPDATE products SET stock_quantity = stock_quantity - ?, product_sales = (product_sales + ?) WHERE item_id = ?",[answers.quantity,totalPrice,answers.product],function(err,update){
 						if (err) {console.log(err);}
-						console.log("Your purchase of " + answers.quantity + " " + response[0].product_name + " comes to $" + (parseInt(answers.quantity) * parseInt(response[0].price)) + " total.");
+						console.log("Your purchase of " + answers.quantity + " " + response[0].product_name + " comes to $" + totalPrice + " total.");
 						buyPrompt();
 					});
 				}

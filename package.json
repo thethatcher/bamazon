@@ -9,6 +9,7 @@
   "author": "Ryan Thatcher",
   "license": "ISC",
   "dependencies": {
+    "cli-table": "^0.3.1",
     "inquirer": "^3.2.3",
     "mysql": "^2.14.1"
   }
